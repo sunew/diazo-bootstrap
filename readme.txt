@@ -1,0 +1,1 @@
+diazo standalone buildout

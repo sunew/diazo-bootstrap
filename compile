@@ -1,0 +1,4 @@
+#!/bin/sh
+echo compiling plone-theme.xsl
+bin/diazocompiler -r rules-plone.xml -t theme/index.html -a /static/ > plone-theme.xsl | tee compile.log
+cat compile.log

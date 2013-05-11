@@ -1,0 +1,31 @@
+# Example apache setup
+
+# These modules (along with a number of standard ones) should be installed
+#LoadModule filter_module /usr/lib/apache2/modules/mod_filter.so
+#LoadModule transform_module /usr/lib/apache2/modules/mod_transform.so
+
+<VirtualHost *:80>
+    ServerName plone.domain.tld
+    ErrorLog /var/log/apache2/plone.error.log
+    FilterDeclare THEME
+    FilterProvider THEME XSLT resp=Content-Type $text/html
+
+    TransformOptions +ApacheFS +HTML +HideParseErrors
+    TransformSet /theme.xsl
+    TransformCache /theme.xsl /usr/local/www/plone.diazo/plone-theme.xsl
+
+    <LocationMatch "/">
+        FilterChain THEME
+    </LocationMatch>
+
+    <Proxy *>
+            Order deny,allow
+            Allow from all
+    </Proxy>
+
+    ProxyVia on
+    RewriteEngine On
+    RewriteRule ^/static(.*) /usr/local/www/plone.diazo/theme/$1 [L]
+    RewriteRule ^/(.*) http://localhost:8080/VirtualHostBase/http/%{HTTP_HOST}:80/site/VirtualHostRoot/$1 [L,P]
+
+</VirtualHost>
